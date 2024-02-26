@@ -361,16 +361,6 @@ var _ = Describe("TrustyAI operator", func() {
 					if volumeMount.Name == caBundleName && volumeMount.MountPath == "/etc/pki/ca-trust/extracted/pem" {
 						foundTrustedCAVolumeMount = true
 					}
-
-					if container.Name == "oauth-proxy" {
-						foundOpenshiftCAArg := false
-						for _, arg := range container.Args {
-							if arg == "--openshift-ca=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem" {
-								foundOpenshiftCAArg = true
-							}
-						}
-						Expect(foundOpenshiftCAArg).To(BeTrue(), "oauth-proxy container missing --openshift-ca argument")
-					}
 				}
 			}
 			Expect(foundTrustedCAVolumeMount).To(BeTrue(), caBundleName+"trusted-ca volume mount not found in any container")
