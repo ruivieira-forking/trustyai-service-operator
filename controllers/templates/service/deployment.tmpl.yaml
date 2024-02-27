@@ -96,7 +96,8 @@ spec:
           {{ if .CustomCertificatesBundle.IsDefined }}
             - name: {{ .CustomCertificatesBundle.VolumeName }}
               readOnly: true
-              mountPath: /etc/pki/ca-trust/extracted/pem
+              mountPath: /etc/ssl/certs/ca-bundle.crt
+              subPath: ca-bundle.crt
               {{ end }}
             - name: {{ .Instance.Name }}-tls
               mountPath: /etc/tls/private
@@ -107,7 +108,7 @@ spec:
             - '--email-domain=*'
             - '--openshift-service-account={{ .Instance.Name }}-proxy'
             {{ if .CustomCertificatesBundle.IsDefined }}
-            - '--openshift-ca=/etc/pki/tls/certs/ca-bundle.crt'
+            - '--openshift-ca=/etc/ssl/certs/ca-bundle.crt'
             {{ end }}
             - '--provider=openshift'
             - '--tls-cert=/etc/tls/private/tls.crt'
@@ -128,9 +129,6 @@ spec:
         - name: {{ .CustomCertificatesBundle.VolumeName}}
           configMap:
             name: {{ .CustomCertificatesBundle.ConfigMapName }}
-            items:
-              - key: ca-bundle.crt
-                path: tls-ca-bundle.pem
             defaultMode: 420
         {{ end }}
         - name: {{ .Instance.Name}}-tls

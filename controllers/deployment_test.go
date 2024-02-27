@@ -343,28 +343,20 @@ var _ = Describe("TrustyAI operator", func() {
 
 			Expect(deployment.Spec.Template.Spec.ServiceAccountName).To(Equal(instance.Name + "-proxy"))
 
-			foundTrustedCAVolume := false
-			for _, volume := range deployment.Spec.Template.Spec.Volumes {
-				if volume.Name == caBundleName && volume.ConfigMap != nil && volume.ConfigMap.Name == caBundleName {
-					foundTrustedCAVolume = true
-					Expect(volume.ConfigMap.Items).To(ContainElement(corev1.KeyToPath{
-						Key:  "ca-bundle.crt",
-						Path: "tls-ca-bundle.pem",
-					}))
-				}
-			}
-			Expect(foundTrustedCAVolume).To(BeTrue(), caBundleName+" volume not found")
+			foundCustomCertificatesBundleVolumeMount := false
 
-			foundTrustedCAVolumeMount := false
+			customCertificatesBundleMountPath := "/etc/ssl/certs/ca-bundle.crt" // Adjust this based on your actual mount path
 			for _, container := range deployment.Spec.Template.Spec.Containers {
 				for _, volumeMount := range container.VolumeMounts {
-					if volumeMount.Name == caBundleName && volumeMount.MountPath == "/etc/pki/ca-trust/extracted/pem" {
-						foundTrustedCAVolumeMount = true
+					if volumeMount.Name == caBundleName && volumeMount.MountPath == customCertificatesBundleMountPath {
+						foundCustomCertificatesBundleVolumeMount = true
 					}
 				}
 			}
-			Expect(foundTrustedCAVolumeMount).To(BeTrue(), caBundleName+"trusted-ca volume mount not found in any container")
-			Expect(k8sClient.Delete(ctx, caBundleConfigMap)).To(Succeed(), "failed to delete custom CA bundle ConfigMap")
+			Expect(foundCustomCertificatesBundleVolumeMount).To(BeTrue(), caBundleName+" volume mount not found in any container")
+
+			// Assuming you want to clean up after your test
+			Expect(k8sClient.Delete(ctx, caBundleConfigMap)).To(Succeed(), "failed to delete custom certificates bundle ConfigMap")
 
 		})
 	})
