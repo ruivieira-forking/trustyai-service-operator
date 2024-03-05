@@ -1,3 +1,47 @@
+To use this branch in a `DataScienceCluster` resource, you need to add the following to the `spec` section of the resource:
+
+```yaml
+apiVersion: datasciencecluster.opendatahub.io/v1
+kind: DataScienceCluster
+metadata:
+  finalizers:
+    - datasciencecluster.opendatahub.io/finalizer
+  labels:
+    app.kubernetes.io/created-by: opendatahub-operator
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: datasciencecluster
+    app.kubernetes.io/part-of: opendatahub-operator
+  name: default-dsc
+spec:
+  components:
+    codeflare:
+      managementState: Removed
+    kserve:
+      managementState: Removed
+    modelregistry:
+      managementState: Removed
+    trustyai:
+      devFlags:
+        manifests:
+          - contextDir: config
+            sourcePath: ''
+            uri: >-
+              https://github.com/ruivieira-forking/trustyai-service-operator/tarball/devFlags/RHOAIENG-3845-finalizer
+      managementState: Managed
+    ray:
+      managementState: Removed
+    kueue:
+      managementState: Removed
+    workbenches:
+      managementState: Removed
+    dashboard:
+      managementState: Removed
+    modelmeshserving:
+      managementState: Managed
+    datasciencepipelines:
+      managementState: Removed
+```
 [![Controller Tests](https://github.com/trustyai-explainability/trustyai-service-operator/actions/workflows/controller-tests.yaml/badge.svg)](https://github.com/trustyai-explainability/trustyai-service-operator/actions/workflows/controller-tests.yaml)[![YAML lint](https://github.com/trustyai-explainability/trustyai-service-operator/actions/workflows/lint-yaml.yaml/badge.svg)](https://github.com/trustyai-explainability/trustyai-service-operator/actions/workflows/lint-yaml.yaml)
 # TrustyAI Kubernetes Operator
 
